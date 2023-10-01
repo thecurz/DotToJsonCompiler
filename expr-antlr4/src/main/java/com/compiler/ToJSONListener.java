@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
 
-public class ToJSONListener extends ExprBaseListener implements ExprListener {
+public class ToJSONListener extends ExprBaseListener {
   private Map<String, List<Object[]>> tupleMap = new HashMap<>();
 
   private static void addTuple(Map<String, List<Object[]>> map, String key, Object[] tuple) {
