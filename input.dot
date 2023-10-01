@@ -1,0 +1,11 @@
+digraph WeightedGraph {
+    A [label=NodeA];
+    B [label=NodeB];
+    C [label=NodeC];
+    D [label=NodeD];
+
+    A -> B [weight=5];
+    B -> C [weight=3];
+    C -> D [weight=2];
+    A -> D [weight=7]; 
+}
