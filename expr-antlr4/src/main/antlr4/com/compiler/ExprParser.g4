@@ -1,9 +1,11 @@
 parser grammar ExprParser;
 options { tokenVocab=ExprLexer; }
 
-graph       : (GRAPH_TYPE id? LBRACE stmt_list RBRACE)          //#graphExpr
+program     : graph EOF
             ;
-stmt_list   : (stmt (SEMICOLON stmt_list)?)                     //#stmtListExpr
+graph       : STRICT? (GRAPH | DIGRAPH) id? LBRACE stmt_list RBRACE//#graphExpr
+            ;
+stmt_list   : (stmt SEMICOLON? stmt_list)?                       //#stmtListExpr
             ;
 stmt        : node_stmt                                         //#nodeStmt
             | edge_stmt                                         //#edgeStmt
@@ -11,23 +13,25 @@ stmt        : node_stmt                                         //#nodeStmt
             | id EQUALS id                                      //#assign
             | subgraph                                          //#subgraphStmt
             ;
-attr_stmt   : (GRAPH_TYPE | NODE | EDGE) attr_list              //#attrDef
+attr_stmt   : (GRAPH | NODE | EDGE) attr_list              //#attrDef
             ;
 attr_list   : LBRACKET (a_list)? RBRACKET (attr_list)?          //#attrList
             ;
 a_list      : id EQUALS id (SEMICOLON | COMMA)? (a_list)?       //#assignList
             ;
-edge_stmt   : (node_id | subgraph) edgeRHS attr_list?           //#edgeStart
+edge_stmt   : (node_id | subgraph) edgeRHS (attr_list)?           //#edgeStart
             ;
-edgeRHS     : (ARROW | LINE) (node_id | subgraph) (edgeRHS)?    //#edgeEnd
+edgeRHS     : edgeop (node_id | subgraph) (edgeRHS)?    //#edgeEnd
             ;
-node_stmt   : node_id attr_list?                                //#nodeDef
+node_stmt   : node_id (attr_list)?                                //#nodeDef
             ;
-node_id     : id (port)?                                        //#NodeId
+node_id     : id (port)?                                        //#nodeId
             ;
-port        : COLON id (COLON COMPASS_PT)?                      //#PortId
-            | COLON COMPASS_PT                                  //#PortCompass
+port        : COLON id (COLON COMPASS_PT)?                      //#portId
+            | COLON COMPASS_PT                                  //#portCompass
             ;
-subgraph    : (SUBGRAPH (id)?) LBRACE stmt_list RBRACE          //#SubgraphDef
+subgraph    : (SUBGRAPH (id)?)? LBRACE stmt_list RBRACE          //#subgraphDef
             ;
-id          : STRING | NUMERAL | DQSRING | HTMLSTRING;
+edgeop      : ARROW | LINE;                                     //#EdgeOp
+id          : STRING | NUMERAL | DQSRING | HTMLSTRING           //#Id
+            ;
