@@ -15,22 +15,18 @@ public class ExprParserVisitorImpl implements ExprParserVisitor<String> {
     public String visitProgram(ExprParser.ProgramContext ctx) {
         return "";
     }
-
     @Override
     public String visitGraph(ExprParser.GraphContext ctx) {
         return "";
     }
-
     @Override
     public String visitStmtListExpr(ExprParser.StmtListExprContext ctx) {
         return "";
     }
-
     @Override
     public String visitNodeStmt(ExprParser.NodeStmtContext ctx) {
         return "";
     }
-
     @Override
     public String visitEdgeStmt(ExprParser.EdgeStmtContext ctx) {
         return "";
