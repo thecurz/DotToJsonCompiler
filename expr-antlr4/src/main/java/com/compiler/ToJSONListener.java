@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
 
-public class ToJSONListener extends ExprBaseListener {
+public class ToJSONListener extends ExprParserBaseListener {
   private Map<String, List<Object[]>> tupleMap = new HashMap<>();
 
   private static void addTuple(Map<String, List<Object[]>> map, String key, Object[] tuple) {
@@ -73,11 +73,11 @@ public class ToJSONListener extends ExprBaseListener {
 
   @Override
   public void enterEdge_stmt(ExprParser.Edge_stmtContext ctx) {
-    String source = ctx.node_id().ID().getText();
+    String source = ctx.node_id().id().getText();
     String edge = ctx.edgeRHS().node_id().getText();
     String weight;
     if (ctx.attr_list() != null && ctx.attr_list().a_list() != null) {
-      weight = ctx.attr_list().a_list().ID(1).getText();
+      weight = ctx.attr_list().a_list().id(1).getText();
     } else {
       weight = "0";
     }

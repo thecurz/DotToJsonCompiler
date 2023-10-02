@@ -8,7 +8,6 @@
   <groupId>com.compiler</groupId>
   <artifactId>expr-antlr4</artifactId>
   <version>1.0-SNAPSHOT</version>
-
   <name>expr-antlr4</name>
 
   <properties>
@@ -36,8 +35,6 @@
       <artifactId>picocli</artifactId>
       <version>4.7.5</version>
     </dependency>
-
-
   </dependencies>
 
   <build>
