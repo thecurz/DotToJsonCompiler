@@ -75,7 +75,12 @@ public class ToJSONListener extends ExprBaseListener {
   public void enterEdge_stmt(ExprParser.Edge_stmtContext ctx) {
     String source = ctx.node_id().ID().getText();
     String edge = ctx.edgeRHS().node_id().getText();
-    String weight = ctx.attr_list().a_list().ID(1).getText();
+    String weight;
+    if (ctx.attr_list() != null && ctx.attr_list().a_list() != null) {
+      weight = ctx.attr_list().a_list().ID(1).getText();
+    } else {
+      weight = "0";
+    }
     // System.out.println("Source: " + source);
     // System.out.println("EDGE:" + ctx.edgeRHS().node_id().getText());
     // System.out.println("attr:" + ctx.attr_list().a_list().ID(1));
