@@ -9,10 +9,12 @@ Se utiliza el lenguaje DOT según las especificaciones que graphviz indica.
 
 ### Formato de destino
 Se transformará a una lista de adyacencia con el siguiente formato:
-`{
+```
+{
     "nodoInicio": [["nodofin", peso], ...],
     ...
-}`
+}
+```
 De ser listas sin peso, se considerará 0 como peso por default.
 
 ## Analizadores gramáticos
@@ -39,7 +41,8 @@ Para la traducción hacemos uso de Java y Antlr.
 ## Resultado
 
 Con el input
-`
+
+```
 digraph G {
 
   subgraph cluster_0 {
@@ -67,9 +70,10 @@ digraph G {
   start [shape=Mdiamond];
   end [shape=Msquare];
 }
-`
+```
+
 
 Muestra como resultado
-`
+```
 {"b2":[["a3", 0]],"a1":[["b3", 0]],"b3":[["end", 0]],"a3":[["a0", 0],["end", 0]],"start":[["a0", 0],["b0", 0]],"b0":[["b1", 0]],"a0":[["a1", 0]]}
-`
+```
