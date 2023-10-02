@@ -6,6 +6,9 @@ package com.compiler;
 // import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
+
+import com.compiler.ExprParser.IdContext;
+
 import java.util.HashMap;
 import java.util.ArrayList;
 
@@ -72,12 +75,13 @@ public class ToJSONListener extends ExprParserBaseListener {
   }
 
   @Override
-  public void enterEdge_stmt(ExprParser.Edge_stmtContext ctx) {
-    String source = ctx.node_id().id().getText();
-    String edge = ctx.edgeRHS().node_id().getText();
+  public void enterEdgeStmt(ExprParser.EdgeStmtContext ctx) {
+    String source = ctx.edge_stmt().node_id().id().getText();
+    String edge = ctx.edge_stmt().edgeRHS().node_id().getText();
+    // String edge = ctx.edgeRHS().node_id().getText();
     String weight;
-    if (ctx.attr_list() != null && ctx.attr_list().a_list() != null) {
-      weight = ctx.attr_list().a_list().id(1).getText();
+    if (ctx.edge_stmt().attr_list() != null && ctx.edge_stmt().attr_list().a_list() != null) {
+      weight = ctx.edge_stmt().attr_list().a_list().id(1).getText();
     } else {
       weight = "0";
     }

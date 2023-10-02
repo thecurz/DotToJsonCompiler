@@ -3,7 +3,7 @@ options { tokenVocab=ExprLexer; }
 
 program     : graph EOF
             ;
-graph       : STRICT? (GRAPH | DIGRAPH) id? LBRACE stmt_list RBRACE #graphExpr
+graph       : STRICT? (GRAPH | DIGRAPH) id? LBRACE stmt_list RBRACE 
             ;
 stmt_list   : (stmt SEMICOLON? stmt_list)?                          #stmtListExpr
             ;
@@ -13,26 +13,26 @@ stmt        : node_stmt                                             #nodeStmt
             | id EQUALS id                                          #assign
             | subgraph                                              #subgraphStmt
             ;
-attr_stmt   : (GRAPH | NODE | EDGE) attr_list                       #attrDef
+attr_stmt   : (GRAPH | NODE | EDGE) attr_list                       
             ;
-attr_list   : LBRACKET (a_list)? RBRACKET (attr_list)?              #attrList
+attr_list   : LBRACKET (a_list)? RBRACKET (attr_list)?              
             ;
-a_list      : id EQUALS id (SEMICOLON | COMMA)? (a_list)?           #assignList
+a_list      : id EQUALS id (SEMICOLON | COMMA)? (a_list)?           
             ;
-edge_stmt   : (node_id | subgraph) edgeRHS (attr_list)?             #edgeStart
+edge_stmt   : (node_id | subgraph) edgeRHS (attr_list)?             
             ;
-edgeRHS     : edgeop (node_id | subgraph) (edgeRHS)?                #edgeEnd
+edgeRHS     : edgeop (node_id | subgraph) (edgeRHS)?               
             ;
-node_stmt   : node_id (attr_list)?                                  #nodeDef
+node_stmt   : node_id (attr_list)?                                  
             ;
-node_id     : id (port)?                                            #nodeId
+node_id     : id (port)?                                            
             ;
 port        : COLON id (COLON COMPASS_PT)?                          #portId
             | COLON COMPASS_PT                                      #portCompass
             ;
-subgraph    : (SUBGRAPH (id)?)? LBRACE stmt_list RBRACE             #subgraphDef
+subgraph    : (SUBGRAPH (id)?)? LBRACE stmt_list RBRACE             
             ;
-edgeop      : ARROW | LINE                                          #EdgeOp
+edgeop      : ARROW | LINE                                          
             ;
-id          : STRING | NUMERAL | DQSRING | HTMLSTRING               #Id
+id          : STRING | NUMERAL | DQSRING | HTMLSTRING             
             ;
