@@ -110,14 +110,6 @@ public class ExprParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_program; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).enterProgram(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).exitProgram(this);
-		}
 	}
 
 	public final ProgramContext program() throws RecognitionException {
@@ -160,14 +152,6 @@ public class ExprParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_graph; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).enterGraph(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).exitGraph(this);
-		}
 	}
 
 	public final GraphContext graph() throws RecognitionException {
@@ -228,18 +212,6 @@ public class ExprParser extends Parser {
 
 	@SuppressWarnings("CheckReturnValue")
 	public static class Stmt_listContext extends ParserRuleContext {
-		public Stmt_listContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_stmt_list; }
-	 
-		public Stmt_listContext() { }
-		public void copyFrom(Stmt_listContext ctx) {
-			super.copyFrom(ctx);
-		}
-	}
-	@SuppressWarnings("CheckReturnValue")
-	public static class StmtListExprContext extends Stmt_listContext {
 		public StmtContext stmt() {
 			return getRuleContext(StmtContext.class,0);
 		}
@@ -247,15 +219,10 @@ public class ExprParser extends Parser {
 			return getRuleContext(Stmt_listContext.class,0);
 		}
 		public TerminalNode SEMICOLON() { return getToken(ExprParser.SEMICOLON, 0); }
-		public StmtListExprContext(Stmt_listContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).enterStmtListExpr(this);
+		public Stmt_listContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
 		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).exitStmtListExpr(this);
-		}
+		@Override public int getRuleIndex() { return RULE_stmt_list; }
 	}
 
 	public final Stmt_listContext stmt_list() throws RecognitionException {
@@ -263,7 +230,6 @@ public class ExprParser extends Parser {
 		enterRule(_localctx, 4, RULE_stmt_list);
 		int _la;
 		try {
-			_localctx = new StmtListExprContext(_localctx);
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(50);
@@ -319,14 +285,6 @@ public class ExprParser extends Parser {
 			return getRuleContext(Node_stmtContext.class,0);
 		}
 		public NodeStmtContext(StmtContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).enterNodeStmt(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).exitNodeStmt(this);
-		}
 	}
 	@SuppressWarnings("CheckReturnValue")
 	public static class EdgeStmtContext extends StmtContext {
@@ -334,14 +292,6 @@ public class ExprParser extends Parser {
 			return getRuleContext(Edge_stmtContext.class,0);
 		}
 		public EdgeStmtContext(StmtContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).enterEdgeStmt(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).exitEdgeStmt(this);
-		}
 	}
 	@SuppressWarnings("CheckReturnValue")
 	public static class AttrStmtContext extends StmtContext {
@@ -349,14 +299,6 @@ public class ExprParser extends Parser {
 			return getRuleContext(Attr_stmtContext.class,0);
 		}
 		public AttrStmtContext(StmtContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).enterAttrStmt(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).exitAttrStmt(this);
-		}
 	}
 	@SuppressWarnings("CheckReturnValue")
 	public static class SubgraphStmtContext extends StmtContext {
@@ -364,14 +306,6 @@ public class ExprParser extends Parser {
 			return getRuleContext(SubgraphContext.class,0);
 		}
 		public SubgraphStmtContext(StmtContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).enterSubgraphStmt(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).exitSubgraphStmt(this);
-		}
 	}
 	@SuppressWarnings("CheckReturnValue")
 	public static class AssignContext extends StmtContext {
@@ -383,14 +317,6 @@ public class ExprParser extends Parser {
 		}
 		public TerminalNode EQUALS() { return getToken(ExprParser.EQUALS, 0); }
 		public AssignContext(StmtContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).enterAssign(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).exitAssign(this);
-		}
 	}
 
 	public final StmtContext stmt() throws RecognitionException {
@@ -469,14 +395,6 @@ public class ExprParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_attr_stmt; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).enterAttr_stmt(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).exitAttr_stmt(this);
-		}
 	}
 
 	public final Attr_stmtContext attr_stmt() throws RecognitionException {
@@ -525,14 +443,6 @@ public class ExprParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_attr_list; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).enterAttr_list(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).exitAttr_list(this);
-		}
 	}
 
 	public final Attr_listContext attr_list() throws RecognitionException {
@@ -597,14 +507,6 @@ public class ExprParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_a_list; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).enterA_list(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).exitA_list(this);
-		}
 	}
 
 	public final A_listContext a_list() throws RecognitionException {
@@ -679,14 +581,6 @@ public class ExprParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_edge_stmt; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).enterEdge_stmt(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).exitEdge_stmt(this);
-		}
 	}
 
 	public final Edge_stmtContext edge_stmt() throws RecognitionException {
@@ -761,14 +655,6 @@ public class ExprParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_edgeRHS; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).enterEdgeRHS(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).exitEdgeRHS(this);
-		}
 	}
 
 	public final EdgeRHSContext edgeRHS() throws RecognitionException {
@@ -837,14 +723,6 @@ public class ExprParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_node_stmt; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).enterNode_stmt(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).exitNode_stmt(this);
-		}
 	}
 
 	public final Node_stmtContext node_stmt() throws RecognitionException {
@@ -891,14 +769,6 @@ public class ExprParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_node_id; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).enterNode_id(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).exitNode_id(this);
-		}
 	}
 
 	public final Node_idContext node_id() throws RecognitionException {
@@ -950,14 +820,6 @@ public class ExprParser extends Parser {
 		public TerminalNode COLON() { return getToken(ExprParser.COLON, 0); }
 		public TerminalNode COMPASS_PT() { return getToken(ExprParser.COMPASS_PT, 0); }
 		public PortCompassContext(PortContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).enterPortCompass(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).exitPortCompass(this);
-		}
 	}
 	@SuppressWarnings("CheckReturnValue")
 	public static class PortIdContext extends PortContext {
@@ -970,14 +832,6 @@ public class ExprParser extends Parser {
 		}
 		public TerminalNode COMPASS_PT() { return getToken(ExprParser.COMPASS_PT, 0); }
 		public PortIdContext(PortContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).enterPortId(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).exitPortId(this);
-		}
 	}
 
 	public final PortContext port() throws RecognitionException {
@@ -1048,14 +902,6 @@ public class ExprParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_subgraph; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).enterSubgraph(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).exitSubgraph(this);
-		}
 	}
 
 	public final SubgraphContext subgraph() throws RecognitionException {
@@ -1112,14 +958,6 @@ public class ExprParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_edgeop; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).enterEdgeop(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).exitEdgeop(this);
-		}
 	}
 
 	public final EdgeopContext edgeop() throws RecognitionException {
@@ -1162,14 +1000,6 @@ public class ExprParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_id; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).enterId(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprParserListener ) ((ExprParserListener)listener).exitId(this);
-		}
 	}
 
 	public final IdContext id() throws RecognitionException {

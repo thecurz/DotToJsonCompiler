@@ -35,11 +35,20 @@ public class App implements Callable<Integer> {
 
         Map<String, List<Object[]>> serializableData = listener.getTupleMap();
         String json = EdgeDataJsonSerializer.convertTupleMapToJson(serializableData);
+
+        ExprParserVisitorImpl visitor = new ExprParserVisitorImpl();
+        String visitedTree = visitor.visit(tree);
+        System.out.println(visitedTree);
+        // TODO: implement
+        // ExprParserVisitorImpl visitor = ExprParserVisitorImpl();
+        // String SymbolTable = TableToTxt(visitor.getMemory());
+        // TableToTxt.save("filename");
+
         try (FileWriter fileWriter = new FileWriter(outputFilePath)) {
             fileWriter.write(json);
         } catch (IOException e) {
             System.err.println("Error: " + e.getMessage());
-            return 1; 
+            return 1;
         }
         return 0;
 

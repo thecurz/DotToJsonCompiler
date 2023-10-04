@@ -5,7 +5,7 @@ program     : graph EOF
             ;
 graph       : STRICT? (GRAPH | DIGRAPH) id? LBRACE stmt_list RBRACE 
             ;
-stmt_list   : (stmt SEMICOLON? stmt_list)?                          #stmtListExpr
+stmt_list   : (stmt SEMICOLON? stmt_list)?                          
             ;
 stmt        : node_stmt                                             #nodeStmt
             | edge_stmt                                             #edgeStmt

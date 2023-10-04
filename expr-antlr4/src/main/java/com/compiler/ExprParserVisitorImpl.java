@@ -8,25 +8,72 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.RuleNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import com.compiler.ExprParser.GraphContext;
+import com.compiler.ExprParser.StmtContext;
+import com.compiler.ExprParser.Stmt_listContext;
+
 public class ExprParserVisitorImpl implements ExprParserVisitor<String> {
     Map<String, String> memory = new HashMap<String, String>();
+    private final String endingChar = "\n";
 
     @Override
     public String visitProgram(ExprParser.ProgramContext ctx) {
-        return "";
+        String graphResult = visit(ctx.graph()); // Aún no es claro como guardarlo
+        return graphResult;
     }
+
     @Override
     public String visitGraph(ExprParser.GraphContext ctx) {
-        return "";
+        String str = "";
+        String id = ctx.id() != null ? ctx.id().getText() : "";
+        String value = ctx.GRAPH() != null ? ctx.GRAPH().getText() : ctx.DIGRAPH().getText();
+        str += id + " " + value;
+        memory.put(id, value);
+        return str + visitStmt_list(ctx.stmt_list()) + endingChar;
+    }
+
+    @Override
+    public String visitSubgraph(ExprParser.SubgraphContext ctx) {
+        String str = "";
+        // TODO: implement nonexistent id
+        str += ctx.id();
+        str += " " + visitStmt_list(ctx.stmt_list());
+        return str + endingChar;
+    }
+    private String visitStmt(StmtContext ctx){
+        String str = "";
+        return str;
     }
     @Override
-    public String visitStmtListExpr(ExprParser.StmtListExprContext ctx) {
+    public String visitSubgraphStmt(ExprParser.SubgraphStmtContext ctx) {
         return "";
     }
+
+    private String processStmtList(Stmt_listContext ctx, String str) {
+        StmtContext stmt = ctx.stmt(); // Access the stmt if it exists
+
+        if (stmt != null) {
+            str += " " + visit(stmt);
+            processStmtList(ctx.stmt_list(), str);
+        }
+        return str;
+    }
+
+    @Override
+    public String visitStmt_list(Stmt_listContext ctx) {
+        String str = processStmtList(ctx, " ");
+        memory.put("stmt_list", str);
+        return str + endingChar;
+    }
+
     @Override
     public String visitNodeStmt(ExprParser.NodeStmtContext ctx) {
-        return "";
+        String nodeID = ctx.node_stmt().node_id().getText();
+        String attr_list = ctx.node_stmt().attr_list().getText();
+        memory.put(nodeID, attr_list);
+        return attr_list;
     }
+
     @Override
     public String visitEdgeStmt(ExprParser.EdgeStmtContext ctx) {
         return "";
@@ -39,27 +86,46 @@ public class ExprParserVisitorImpl implements ExprParserVisitor<String> {
 
     @Override
     public String visitAssign(ExprParser.AssignContext ctx) {
-        return "";
-    }
-
-    @Override
-    public String visitSubgraphStmt(ExprParser.SubgraphStmtContext ctx) {
-        return "";
+        String id = ctx.id(0).getText();
+        String value = ctx.id(1).getText();
+        memory.put(id, value);
+        return value;
     }
 
     @Override
     public String visitAttr_stmt(ExprParser.Attr_stmtContext ctx) {
+        String type = ctx.getChild(0).getText();
+        String value = visit(ctx.attr_list());
+        memory.put(type, value);
+
         return "";
     }
 
     @Override
     public String visitAttr_list(ExprParser.Attr_listContext ctx) {
-        return "";
+        StringBuilder result = new StringBuilder();
+        if (ctx.a_list() != null) {
+            result.append(visit(ctx.a_list()));
+        }
+        if (ctx.attr_list() != null) {
+            result.append(visit(ctx.attr_list()));
+        }
+
+        return result.toString();
     }
 
     @Override
     public String visitA_list(ExprParser.A_listContext ctx) {
-        return "";
+        StringBuilder result = new StringBuilder();
+        String id = ctx.id(0).getText();
+        String value = ctx.id(1).getText();
+
+        result.append(id).append("=").append(value).append(" ");
+        if (ctx.a_list() != null) {
+            result.append(visit(ctx.a_list()));
+        }
+
+        return result.toString();
     }
 
     @Override
@@ -89,11 +155,6 @@ public class ExprParserVisitorImpl implements ExprParserVisitor<String> {
 
     @Override
     public String visitPortCompass(ExprParser.PortCompassContext ctx) {
-        return "";
-    }
-
-    @Override
-    public String visitSubgraph(ExprParser.SubgraphContext ctx) {
         return "";
     }
 
@@ -150,6 +211,13 @@ public class ExprParserVisitorImpl implements ExprParserVisitor<String> {
 
     @Override
     public String visit(ParseTree tree) {
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        String str = "";
+        if (tree instanceof GraphContext) {
+            GraphContext graphContext = (GraphContext) tree;
+            System.out.println("isistance");
+            str += " " + visitGraph(graphContext);
+        }
+        return str;
     }
+
 }
