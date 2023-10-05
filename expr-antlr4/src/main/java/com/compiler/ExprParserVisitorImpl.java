@@ -1,6 +1,6 @@
 package com.compiler;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -8,13 +8,37 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.RuleNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import com.compiler.ExprParser.EdgeRHSContext;
+import com.compiler.ExprParser.Edge_stmtContext;
 import com.compiler.ExprParser.GraphContext;
 import com.compiler.ExprParser.StmtContext;
 import com.compiler.ExprParser.Stmt_listContext;
 
 public class ExprParserVisitorImpl implements ExprParserVisitor<String> {
-    Map<String, String> memory = new HashMap<String, String>();
+    Map<String, String> memory = new LinkedHashMap<String, String>();
+    private int number = 0;
+
+    public String getN() {
+        String result = "" + number;
+        number++;
+        return result;
+    }
+
     private final String endingChar = "\n";
+
+    public void printMap() {
+        for (Map.Entry<String, String> entry : memory.entrySet()) {
+            System.out.println(entry.getKey() + ": " + entry.getValue());
+        }
+    }
+
+    public String mapToString() {
+        StringBuilder result = new StringBuilder();
+        for (Map.Entry<String, String> entry : memory.entrySet()) {
+            result.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+        }
+        return result.toString();
+    }
 
     @Override
     public String visitProgram(ExprParser.ProgramContext ctx) {
@@ -28,56 +52,77 @@ public class ExprParserVisitorImpl implements ExprParserVisitor<String> {
         String id = ctx.id() != null ? ctx.id().getText() : "";
         String value = ctx.GRAPH() != null ? ctx.GRAPH().getText() : ctx.DIGRAPH().getText();
         str += id + " " + value;
-        memory.put(id, value);
+        memory.put("Graph" + id, value);
         return str + visitStmt_list(ctx.stmt_list()) + endingChar;
     }
 
     @Override
     public String visitSubgraph(ExprParser.SubgraphContext ctx) {
+
         String str = "";
         // TODO: implement nonexistent id
         str += ctx.id();
+        memory.put(getN() + "Subraph", ctx.id().getText());
         str += " " + visitStmt_list(ctx.stmt_list());
+
         return str + endingChar;
     }
 
-    private String visitStmt(ExprParser.StmtContext ctx){
-        if (ctx.node_stmt() != null) {
-            return visitNodeStmt(ctx.node_stmt());
-        } else if (ctx.edge_stmt() != null) {
-            return visitEdgeStmt(ctx.edge_stmt());
-        } else if (ctx.attr_stmt() != null) {
-            return visitAttrStmt(ctx.attr_stmt());
-        } else if (ctx.assign() != null) {
-            return visitAssign(ctx.assign());
-        } else if (ctx.subgraph() != null) {
-            return visitSubgraphStmt(ctx.subgraph());
-        }
-        return "";
-    }
-    
     @Override
     public String visitSubgraphStmt(ExprParser.SubgraphStmtContext ctx) {
-        String id = ctx.id() != null ? ctx.id().getText() : "";
-        String value = visit(ctx.stmt_list());
+        String id = ctx.subgraph().id() != null ? ctx.subgraph().id().getText() : "";
+        String value = visitStmt_list(ctx.subgraph().stmt_list());
         memory.put(id, value);
         return value;
     }
 
     private String processStmtList(Stmt_listContext ctx, String str) {
         StmtContext stmt = ctx.stmt(); // Access the stmt if it exists
-
-        if (stmt != null) {
-            str += " " + visit(stmt);
-            processStmtList(ctx.stmt_list(), str);
+        if (stmt == null)
+            return str;
+        str += " " + visit(stmt);
+        processStmtList(ctx.stmt_list(), str);
+        if (stmt instanceof ExprParser.NodeStmtContext) {
+            ExprParser.NodeStmtContext node_ctx = (ExprParser.NodeStmtContext) stmt;
+            String text = node_ctx.node_stmt().node_id().getText();
+            memory.put(getN() + "node_stmt" + text, text);
+        } else if (stmt instanceof ExprParser.EdgeStmtContext) {
+            ExprParser.EdgeStmtContext edge_ctx = (ExprParser.EdgeStmtContext) stmt;
+            String text = edge_ctx.edge_stmt().node_id().getText();
+            memory.put(getN() + "edge_stmt", text + " -> "
+                    + edge_ctx.edge_stmt().edgeRHS().node_id().getText());
+            EdgeRHSContext curr = edge_ctx.edge_stmt().edgeRHS();
+            while (curr.edgeRHS() != null) {
+                // System.out.println(curr.node_id().getText());
+                memory.put(getN() + "edge_stmt", curr.node_id().getText() + " -> "
+                        + curr.edgeRHS().node_id().getText());
+                curr = curr.edgeRHS();
+            }
+            // TODO: RHS
+        } else if (stmt instanceof ExprParser.AttrStmtContext) {
+            ExprParser.AttrStmtContext attr_ctx = (ExprParser.AttrStmtContext) stmt;
+            // TODO: graph? node? edge?
+            memory.put(getN() + "attr_stmt", visitAttr_list(attr_ctx.attr_stmt().attr_list()));
+        } else if (stmt instanceof ExprParser.AssignContext) {
+            ExprParser.AssignContext attr_ctx = (ExprParser.AssignContext) stmt;
+            memory.put(getN() + "assign", visitAssign(attr_ctx));
+        } else if (stmt instanceof ExprParser.SubgraphStmtContext) {
+            ExprParser.SubgraphStmtContext sub_ctx = (ExprParser.SubgraphStmtContext) stmt;
+            memory.put(getN() + "subgraph_stmt", sub_ctx.subgraph().id().getText());
+            visitSubgraphStmt(sub_ctx);
         }
+        //
+        // else if (ctx.stmt_list() != null) {
+        // System.out.println("called");
+        // processStmtList(ctx.stmt_list(), str);
+        // }
         return str;
     }
 
     @Override
     public String visitStmt_list(Stmt_listContext ctx) {
         String str = processStmtList(ctx, " ");
-        memory.put("stmt_list", str);
+        memory.put(getN() + "stmt_list", str);
         return str + endingChar;
     }
 
@@ -85,31 +130,31 @@ public class ExprParserVisitorImpl implements ExprParserVisitor<String> {
     public String visitNodeStmt(ExprParser.NodeStmtContext ctx) {
         String nodeID = ctx.node_stmt().node_id().getText();
         String attr_list = ctx.node_stmt().attr_list().getText();
-        memory.put(nodeID, attr_list);
+        memory.put(getN() + nodeID, attr_list);
         return attr_list;
     }
 
     @Override
     public String visitEdgeStmt(ExprParser.EdgeStmtContext ctx) {
-        String id = ctx.node_id() != null ? "node_id" : "subgraph";
-        String result = visit(ctx.edgeRHS());
+        String id = ctx.edge_stmt().node_id() != null ? "node_id" : "subgraph";
+        String result = visit(ctx.edge_stmt().edgeRHS());
 
-        String attrList = ctx.attr_list() != null ? visit(ctx.attr_list()) : null;
+        String attrList = ctx.edge_stmt().attr_list() != null ? visit(ctx.edge_stmt().attr_list()) : null;
 
         String values = result;
         if (attrList != null) {
             values += " " + attrList;
         }
 
-        memory.put(id, values);
+        memory.put(getN() + id, values);
         return values;
     }
 
     @Override
     public String visitAttrStmt(ExprParser.AttrStmtContext ctx) {
         String id = ctx.getChild(0).getText();
-        String values = visit(ctx.attr_list());
-        memory.put(id, values);
+        String values = visit(ctx.attr_stmt().attr_list());
+        memory.put(getN() + id, values);
         return values;
     }
 
@@ -117,15 +162,15 @@ public class ExprParserVisitorImpl implements ExprParserVisitor<String> {
     public String visitAssign(ExprParser.AssignContext ctx) {
         String id = ctx.id(0).getText();
         String value = ctx.id(1).getText();
-        memory.put(id, value);
-        return value;
+        // memory.put(id, value);
+        return id + " = " + value;
     }
 
     @Override
     public String visitAttr_stmt(ExprParser.Attr_stmtContext ctx) {
         String type = ctx.getChild(0).getText();
         String value = visit(ctx.attr_list());
-        memory.put(type, value);
+        memory.put(getN() + type, value);
 
         return "";
     }
@@ -134,12 +179,13 @@ public class ExprParserVisitorImpl implements ExprParserVisitor<String> {
     public String visitAttr_list(ExprParser.Attr_listContext ctx) {
         StringBuilder result = new StringBuilder();
         if (ctx.a_list() != null) {
-            result.append(visit(ctx.a_list()));
+            result.append(visitA_list(ctx.a_list()));
+            visitA_list(ctx.a_list());
         }
         if (ctx.attr_list() != null) {
-            result.append(visit(ctx.attr_list()));
+            result.append(visitAttr_list(ctx.attr_list()));
+            visitAttr_list(ctx.attr_list());
         }
-
         return result.toString();
     }
 
@@ -147,10 +193,12 @@ public class ExprParserVisitorImpl implements ExprParserVisitor<String> {
     public String visitA_list(ExprParser.A_listContext ctx) {
         StringBuilder result = new StringBuilder();
         String id = ctx.id(0).getText();
+        String id2 = ctx.id(1).getText();
         String value = ctx.id(1).getText();
-
+        memory.put(getN() + "a_list", id + " = " + id2);
         result.append(id).append("=").append(value).append(" ");
         if (ctx.a_list() != null) {
+            visitA_list(ctx.a_list());
             result.append(visit(ctx.a_list()));
         }
 
@@ -159,20 +207,21 @@ public class ExprParserVisitorImpl implements ExprParserVisitor<String> {
 
     @Override
     public String visitEdge_stmt(ExprParser.Edge_stmtContext ctx) {
-        String value = visit(ctx.edgeRHS());
-        if (ctx.node_id() != null) {
-            String nodeIdInfo = visit(ctx.node_id());
-            value += " " + nodeIdInfo;
-        } else if (ctx.subgraph() != null) {
-            String subgraphInfo = visit(ctx.subgraph());
-            value += " " + subgraphInfo;
-        }
-        if (ctx.attr_list() != null) {
-            String attrListInfo = visit(ctx.attr_list());
-            value += " " + attrListInfo;
-        }
-        memory.put("edge", value);
-        return value;
+        // String value = visit(ctx.edgeRHS());
+        // if (ctx.node_id() != null) {
+        // String nodeIdInfo = visit(ctx.node_id());
+        // value += " " + nodeIdInfo;
+        // } else if (ctx.subgraph() != null) {
+        // String subgraphInfo = visit(ctx.subgraph());
+        // value += " " + subgraphInfo;
+        // }
+        // if (ctx.attr_list() != null) {
+        // String attrListInfo = visit(ctx.attr_list());
+        // value += " " + attrListInfo;
+        // }
+        // memory.put(getN() + "edge", value);
+        // return value;
+        return "";
     }
 
     @Override
@@ -180,10 +229,15 @@ public class ExprParserVisitorImpl implements ExprParserVisitor<String> {
         String result = "";
         result += visit(ctx.edgeop());
 
-        if (ctx.node_id() != null) { result += visit(ctx.node_id()); } 
-        else if (ctx.subgraph() != null) { result += visit(ctx.subgraph()); }
+        if (ctx.node_id() != null) {
+            result += visit(ctx.node_id());
+        } else if (ctx.subgraph() != null) {
+            result += visit(ctx.subgraph());
+        }
 
-        if (ctx.edgeRHS() != null) { result += visit(ctx.edgeRHS()); }
+        if (ctx.edgeRHS() != null) {
+            result += visit(ctx.edgeRHS());
+        }
         return result;
     }
 
@@ -191,10 +245,12 @@ public class ExprParserVisitorImpl implements ExprParserVisitor<String> {
     public String visitNode_stmt(ExprParser.Node_stmtContext ctx) {
         String id = visit(ctx.node_id());
         String values = "";
-        
-        if (ctx.attr_list() != null) { values = visit(ctx.attr_list()); }
-        
-        memory.put(id, values);
+
+        if (ctx.attr_list() != null) {
+            values = visit(ctx.attr_list());
+        }
+
+        memory.put(getN() + id, values);
         return values;
     }
 
@@ -202,10 +258,12 @@ public class ExprParserVisitorImpl implements ExprParserVisitor<String> {
     public String visitNode_id(ExprParser.Node_idContext ctx) {
         String id = ctx.id().getText();
         String portInfo = "";
-        
-        if (ctx.port() != null) { portInfo = visit(ctx.port()); }
+
+        if (ctx.port() != null) {
+            portInfo = visit(ctx.port());
+        }
         String value = id + portInfo;
-        
+
         memory.put(id, value);
         return value;
     }
@@ -214,9 +272,11 @@ public class ExprParserVisitorImpl implements ExprParserVisitor<String> {
     public String visitPortId(ExprParser.PortIdContext ctx) {
         String id = ctx.id().getText();
         String value = "Port ID";
-        if (ctx.COMPASS_PT() != null) { value += " with Compass Point"; }
+        if (ctx.COMPASS_PT() != null) {
+            value += " with Compass Point";
+        }
 
-        memory.put(id, value);
+        memory.put(getN() + id, value);
         return value;
     }
 
@@ -230,7 +290,7 @@ public class ExprParserVisitorImpl implements ExprParserVisitor<String> {
     @Override
     public String visitEdgeop(ExprParser.EdgeopContext ctx) {
         String value = ctx.getText();
-        memory.put("edgeOperator", value);
+        memory.put(getN() + "edgeOperator", value);
         return value;
     }
 
@@ -242,58 +302,28 @@ public class ExprParserVisitorImpl implements ExprParserVisitor<String> {
         return value;
     }
 
-    /**
-     * Visit a parse tree, and return a user-defined result of the operation.
-     *
-     * @param tree The {@link ParseTree} to visit.
-     * @return The result of visiting the parse tree.
-     */
-
-    /**
-     * Visit the children of a node, and return a user-defined result of the
-     * operation.
-     *
-     * @param node The {@link RuleNode} whose children should be visited.
-     * @return The result of visiting the children of the node.
-     */
-    // @Override
-    // public String visitChildren(RuleNode node) {
-    //     return "";
-    // }
-
-    /**
-     * Visit a terminal node, and return a user-defined result of the operation.
-     *
-     * @param node The {@link TerminalNode} to visit.
-     * @return The result of visiting the node.
-     */
     @Override
     public String visitTerminal(TerminalNode node) {
-        String id = node.getText();
-        int value = node.getSymbol().getType();
-        
-        if (value == ExprLexer.ID) {
-            // Es un identificador, realiza alguna acción
-        } else if (value == ExprLexer.NUMERAL) {
-            // Es un número, realiza alguna acción
-        } else if (value == ExprLexer.STRING) {
-            // Es una cadena, realiza alguna acción
-        }
- 
-        return id;
+        throw new UnsupportedOperationException("visitTerminal function is not implemented.");
+        // String id = node.getText();
+        // int value = node.getSymbol().getType();
+
+        // if (value == ExprLexer.ID) {
+        // // Es un identificador, realiza alguna acción
+        // } else if (value == ExprLexer.NUMERAL) {
+        // // Es un número, realiza alguna acción
+        // } else if (value == ExprLexer.STRING) {
+        // // Es una cadena, realiza alguna acción
+        // }
+
+        // return id;
     }
 
-    /**
-     * Visit an error node, and return a user-defined result of the operation.
-     *
-     * @param node The {@link ErrorNode} to visit.
-     * @return The result of visiting the node.
-     */
     @Override
     public String visitErrorNode(ErrorNode node) {
         System.err.println("Error sintáctico en la línea " + node.getSymbol().getLine() +
-        ", columna " + node.getSymbol().getCharPositionInLine() +
-        ": Token inesperado '" + node.getSymbol().getText() + "'");
+                ", columna " + node.getSymbol().getCharPositionInLine() +
+                ": Token inesperado '" + node.getSymbol().getText() + "'");
 
         return "";
     }
@@ -303,10 +333,15 @@ public class ExprParserVisitorImpl implements ExprParserVisitor<String> {
         String str = "";
         if (tree instanceof GraphContext) {
             GraphContext graphContext = (GraphContext) tree;
-            System.out.println("isistance");
             str += " " + visitGraph(graphContext);
         }
         return str;
+    }
+
+    @Override
+    public String visitChildren(RuleNode node) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'visitChildren'");
     }
 
 }

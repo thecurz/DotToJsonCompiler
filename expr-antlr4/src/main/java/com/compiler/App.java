@@ -5,6 +5,10 @@ import org.antlr.v4.runtime.tree.*;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -38,7 +42,15 @@ public class App implements Callable<Integer> {
 
         ExprParserVisitorImpl visitor = new ExprParserVisitorImpl();
         String visitedTree = visitor.visit(tree);
-        System.out.println(visitedTree);
+        String map = visitor.mapToString();
+        try {
+            Path path = Paths.get("tabla_simbolos.txt");
+            Files.write(path, Collections.singleton(map));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // System.out.println(visitedTree);
         // TODO: implement
         // ExprParserVisitorImpl visitor = ExprParserVisitorImpl();
         // String SymbolTable = TableToTxt(visitor.getMemory());

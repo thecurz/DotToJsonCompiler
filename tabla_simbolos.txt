@@ -1,0 +1,39 @@
+GraphG: digraph
+0node_stmtend: end
+1node_stmtstart: start
+2edge_stmt: b3 -> end
+3edge_stmt: a3 -> end
+4edge_stmt: a3 -> a0
+5edge_stmt: b2 -> a3
+6edge_stmt: a1 -> b3
+7edge_stmt: start -> b0
+8edge_stmt: start -> a0
+9subgraph_stmt: cluster_1
+10assign: color = blue
+11assign: label = "process #2"
+12edge_stmt: b0 -> b1
+13edge_stmt: b1 -> b2
+14edge_stmt: b2 -> b3
+16a_list: style = filled
+17a_list: style = filled
+15attr_stmt: style=filled 
+18stmt_list:   
+cluster_1:   
+
+19subgraph_stmt: cluster_0
+20assign: label = "process #1"
+21edge_stmt: a0 -> a1
+22edge_stmt: a1 -> a2
+23edge_stmt: a2 -> a3
+25a_list: style = filled
+26a_list: color = white
+27a_list: style = filled
+28a_list: color = white
+24attr_stmt: style=filled 
+29assign: color = lightgrey
+30assign: style = filled
+31stmt_list:   
+cluster_0:   
+
+32stmt_list:   
+

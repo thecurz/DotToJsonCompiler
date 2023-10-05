@@ -14,13 +14,13 @@ digraph G {
     label = "process #2";
     color=blue
   }
-  start -> a0;
-  start -> b0;
-  a1 -> b3;
-  b2 -> a3;
-  a3 -> a0;
-  a3 -> end;
-  b3 -> end;
+  start -> a0 [weight=7];
+  start -> b0 [weight=3];
+  a1 -> b3 [weight=9];
+  b2 -> a3 [weight=6];
+  a3 -> a0 [weight=8];
+  a3 -> end [weight=5];
+  b3 -> end [weight=4];
 
   start [shape=Mdiamond];
   end [shape=Msquare];
